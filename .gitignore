@@ -4,6 +4,11 @@
 # private information of the project 
 private/
 
+# specific for this project
+projects/lambda/ec2controller.zip
+
+# Python 
+.env
 
 # Compiled output
 /dist
@@ -12,7 +17,7 @@ private/
 /bazel-out
 
 # Node
-/node_modules
+node_modules/
 npm-debug.log
 yarn-error.log
 package-lock.json
