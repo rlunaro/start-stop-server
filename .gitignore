@@ -4,8 +4,10 @@
 # private information of the project 
 private/
 
+
 # specific for this project
 projects/lambda/ec2controller.zip
+projects/mobile/environments/environment.ts
 
 # Python 
 .env
