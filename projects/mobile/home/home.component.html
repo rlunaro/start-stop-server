@@ -8,26 +8,39 @@
   </div>
   <div class="row align-items-center" style="height: 10em;">
     <div class="col">
-      <div class="alert alert-danger" *ngFor="let status of serverStatus">
-        El servidor está <b>{{status}}</b>.
+      <div class="alert alert-danger d-flex justify-content-between" role="alert">
+        <span *ngFor="let status of serverStatus">El servidor está <b>{{status}}</b></span>
+        <!-- span class="big-text">{{serverStatusTimeout}}</span -->
       </div>
     </div>
   </div>
+
+
   <div class="row" style="height: 10em;">
     <div class="col-sm">
 
       <button class="btn btn-primary btn-lg btn-block"
           style="width: 100%; height: 80%"
-          (click)="startServer()">Encender Servidor</button>
+          (click)="startServer()"
+          [disabled]="isStarting">
+          <span *ngIf="!isStarting">Encender Servidor</span>
+          <div class="lds-spinner" 
+          style="margin-bottom: 0.5rem;"
+          *ngIf="isStarting"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>  
+      </button>
       
     </div>
-  </div>
-  <div class="row" style="height: 10em;">
     <div class="col-sm">
 
       <button class="btn btn-primary btn-lg btn-block"
         style="width: 100%; height: 80%"
-        >Apagar Servidor</button>
+        (click)="stopServer()"
+        [disabled]="isStopping">
+        <span *ngIf="!isStopping">Apagar Servidor</span>
+        <div class="lds-spinner" 
+          style="margin-bottom: 0.5rem;"
+          *ngIf="isStopping"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+      </button>
 
     </div>
   </div>

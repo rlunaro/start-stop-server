@@ -21,7 +21,7 @@ function pickupServer( serverNumber ){
     return process.env.INSTANCE3;
 }
 
-export const handler = (event, context) => {
+export const FAKE_handler = (event, context) => {
 
   console.log( "this is the fake handler" );
   console.log( JSON.stringify( event, null, 2));
@@ -165,7 +165,7 @@ export const handler = (event, context) => {
 
 }
 
-export const PRODUCTION_handler = (event) => {
+export const handler = (event) => {
 
   let queryString = event["queryStringParameters"];
 
