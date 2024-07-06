@@ -14,6 +14,18 @@ import { Subscription, interval } from 'rxjs';
 })
 export class HomeComponent implements OnInit, OnDestroy {
 
+
+  public serverList = [{
+    id : "1", 
+    name: "Craft2Exile (Cesar, Jorge, Santi...)"
+  },
+  {
+    id : "2",
+    name: "CreateMod (Quique, Martín, Santi)"
+  }];
+  public currentServer = 0;
+
+
   private serverStatusSubs : Subscription;
   public serverStatus : string[];
   public isStarting : boolean = false;
@@ -30,18 +42,33 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(){
+    this.currentServer = this.getCurrentServer( );
+    console.log("current server ", this.currentServer );
   }
 
   ngOnDestroy(){
+    this.setCurrentServer( );
     if( this.serverStatusSubs )
       this.serverStatusSubs.unsubscribe();
+  }
+
+  getCurrentServer( ) : number {
+    if( localStorage.getItem("currentServer") ){
+      return parseInt( <string> localStorage.getItem("currentServer") );
+    }else{
+      return this.currentServer;
+    }
+  }
+
+  setCurrentServer( ){
+    localStorage.setItem("currentServer", this.currentServer.toString());
   }
 
   updateServerStatus(){
     this.http.get( environment.endpoint, 
                     { params: 
                       { "op": "status", 
-                        "server": "1"
+                        "server": this.serverList[this.currentServer].id
                       }
                     })
     .subscribe( ( response : any ) => {
@@ -66,7 +93,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.http.get( environment.endpoint,
       {params: 
         {"op": "start",
-      "server": "1" }} )
+      "server": this.serverList[this.currentServer].id }} )
     .subscribe( (x) => {
       this.isStarting = false;
       this.updateServerStatus();
@@ -79,7 +106,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.http.get( environment.endpoint,
       {params: 
         {"op": "stop",
-      "server": "1" }} )
+      "server": this.serverList[this.currentServer].id }} )
     .subscribe( (x) => {
       this.isStopping = false;
       this.updateServerStatus();
