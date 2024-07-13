@@ -1,39 +1,39 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 
 import { environment  }  from '../environments/environment';
 import { Subscription, interval } from 'rxjs';
+import { FormsModule, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [ NgFor, NgIf ],
+  imports: [ NgFor, NgIf, FormsModule ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit, OnDestroy {
 
-
   public serverList = [{
-    id : "1", 
+    id : "0", 
     name: "Craft2Exile (Cesar, Jorge, Santi...)"
   },
   {
-    id : "2",
+    id : "1",
     name: "CreateMod (Quique, Martín, Santi)"
   }];
   public currentServer = 0;
 
 
   private serverStatusSubs : Subscription;
-  public serverStatus : string[];
+  public statusMessage : string;
   public isStarting : boolean = false;
   public isStopping : boolean = false;
   
   
   constructor( private http : HttpClient ){
-    this.serverStatus = ["N/A"];
+    this.statusMessage = "N/A";
     this.updateServerStatus();
     this.serverStatusSubs = interval(5000).subscribe(() => {
       this.updateServerStatus();
@@ -72,24 +72,24 @@ export class HomeComponent implements OnInit, OnDestroy {
                       }
                     })
     .subscribe( ( response : any ) => {
-      // console.log( response );
-      this.serverStatus = [];
-      for( let instanceStatus of response["InstanceStatuses"] ){
-        if( instanceStatus["InstanceState"]["Name"] === "running" )
-          this.serverStatus.push( "encendido" );
-        else if( instanceStatus["InstanceState"]["Name"] === "stopped" )
-          this.serverStatus.push( "detenido" );
-        else if( instanceStatus["InstanceState"]["Name"] === "stopping" )
-          this.serverStatus.push( "deteniéndose" );
-        else
-          this.serverStatus.push( instanceStatus["InstanceState"]["Name"] );
-      }
+      this.statusMessage = "";
+      let instanceStatus = response["InstanceStatuses"][0];
+      console.log( instanceStatus );
+      if( instanceStatus["InstanceState"]["Name"] === "running" )
+        this.statusMessage = "encendido";
+      else if( instanceStatus["InstanceState"]["Name"] === "stopped" )
+        this.statusMessage = "detenido";
+      else if( instanceStatus["InstanceState"]["Name"] === "stopping" )
+        this.statusMessage = "deteniéndose";
+      else
+        this.statusMessage = instanceStatus["InstanceState"]["Name"];
     });
   }
 
   startServer(){
+    this.setCurrentServer();
     this.isStarting = true;
-    this.serverStatus[0] = "encendiéndose";
+    this.statusMessage = "encendiéndose";
     this.http.get( environment.endpoint,
       {params: 
         {"op": "start",
@@ -101,8 +101,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   stopServer(){
+    this.setCurrentServer();
     this.isStopping = true;
-    this.serverStatus[0] = "apagándose";
+    this.statusMessage = "apagándose";
     this.http.get( environment.endpoint,
       {params: 
         {"op": "stop",

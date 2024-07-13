@@ -41,5 +41,11 @@ function addPathRecursivelyToZip( zip, zipDestPath, sourcePath ){
 }
 
 
-console.log("Zip file creation for the lambdas");
-createZip( ["ec2controller"], "ec2controller.zip" );
+let args = process.argv.slice(2);
+if( args.length != 1 ){
+  console.log( "Invocation: deploy.mjs [DIRECTORY]" );
+}else{
+  console.log(`Zip file creation for the lambdas: ${args[0]}`);
+  createZip( [args[0]], `${args[0]}.zip` );
+}
+

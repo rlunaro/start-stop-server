@@ -1,6 +1,10 @@
 
 import { handler } from './index.mjs';
 
+process.env["INSTANCE0"] = "YAVEREMOS";
+process.env["INSTANCE1"] = "YAVEREMOS2";
+process.env["REGION"] = "zimbawe";
+
 handler({"queryStringParameters": {
   "op": "status",
   "server": "1"

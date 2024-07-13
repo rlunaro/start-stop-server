@@ -8,58 +8,60 @@
     </div>
   </div>
 
-  <form>
+  <div class="row align-items-center" style="margin-top: 1rem;">
+    <div class="col">
+      <label for="serverNumber" if="lblServerNumber" 
+        class="form-label form-control-lg" 
+        style="color: #f1efef; font-weight: 600;">Servidor: {{serverList[currentServer].name}}</label>
+      <select id="serverNumber" name="serverNumber"
+        class="form-select form-control-lg" 
+        aria-labeledby="lblServerNumber"
+        [(ngModel)]="currentServer">
+        <option *ngFor="let server of serverList" value="{{server.id}}">{{server.name}}</option>
+      </select>
+    </div>
+  </div>
 
-    <div class="row align-items-center" style="margin-top: 1rem;">
-      <div class="col">
-        <label for="serverNumber" class="form-label form-control-lg" style="color: #f1efef; font-weight: 600;">Servidor:</label>
-        <select id="serverNumber" class="form-select form-control-lg" aria-label="Default select example">
-          <option value="1" selected>Craft2Exile (Cesar, Jorge, Santi...)</option>
-          <option value="2">Create Mod</option>
-        </select>
+  <div class="row align-items-center" style="margin-top: 1rem;">
+    <div class="col">
+      <div class="alert alert-danger d-flex justify-content-between" role="alert">
+        <span>El servidor está <b>{{statusMessage}}</b></span>
       </div>
     </div>
+  </div>
 
-    <div class="row align-items-center" style="margin-top: 1rem;">
-      <div class="col">
-        <div class="alert alert-danger d-flex justify-content-between" role="alert">
-          <span *ngFor="let status of serverStatus">El servidor está <b>{{status}}</b></span>
-          <!-- span class="big-text">{{serverStatusTimeout}}</span -->
-        </div>
-      </div>
-    </div>
-  
-    <div class="row" style="height: 10em;">
-      <div class="col-sm">
-  
-        <button class="btn btn-primary btn-lg btn-block"
-            style="width: 100%; height: 80%"
-            (click)="startServer()"
-            [disabled]="isStarting">
-            <span *ngIf="!isStarting">Encender Servidor</span>
-            <div class="lds-spinner" 
-            style="margin-bottom: 0.5rem;"
-            *ngIf="isStarting"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>  
-        </button>
-        
-      </div>
-      <div class="col-sm">
-  
-        <button class="btn btn-primary btn-lg btn-block"
+  <div class="row" style="height: 10em;">
+    <div class="col-sm">
+
+      <button type="button" 
+          id="btnStartServer" name="btnStartServer"
+          class="btn btn-primary btn-lg btn-block"
           style="width: 100%; height: 80%"
-          (click)="stopServer()"
-          [disabled]="isStopping">
-          <span *ngIf="!isStopping">Apagar Servidor</span>
+          (click)="startServer()"
+          [disabled]="isStarting">
+          <span *ngIf="!isStarting">Encender Servidor</span>
           <div class="lds-spinner" 
-            style="margin-bottom: 0.5rem;"
-            *ngIf="isStopping"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-        </button>
-  
-      </div>
+          style="margin-bottom: 0.5rem;"
+          *ngIf="isStarting"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>  
+      </button>
+      
     </div>
-    
+    <div class="col-sm">
 
-  </form>
+      <button id="btnStopServer" name="btnStopServer"
+        class="btn btn-primary btn-lg btn-block"
+        style="width: 100%; height: 80%"
+        (click)="stopServer()"
+        [disabled]="isStopping">
+        <span *ngIf="!isStopping">Apagar Servidor</span>
+        <div class="lds-spinner" 
+          style="margin-bottom: 0.5rem;"
+          *ngIf="isStopping"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+      </button>
+
+    </div>
+  </div>
+    
 
 
 </div>

@@ -8,162 +8,33 @@ import { EC2Client,
           StopInstancesCommand,
           DescribeInstanceStatusCommand} from "@aws-sdk/client-ec2";
 
+
 function checkParameters( queryString ){
+  if( queryString['op'] && queryString['op'] === 'list' )
+    return true;
   return queryString['op'] && queryString['server'];
 }
 
 function pickupServer( serverNumber ){
+  if( serverNumber === "0" )
+    return process.env.INSTANCE0;
   if( serverNumber === "1" )
     return process.env.INSTANCE1;
   if( serverNumber === "2" )
     return process.env.INSTANCE2;
-  if( serverNumber === "3" )
-    return process.env.INSTANCE3;
 }
 
-export const FAKE_handler = (event, context) => {
 
-  console.log( "this is the fake handler" );
-  console.log( JSON.stringify( event, null, 2));
-  let queryString = event["queryStringParameters"];
-
-  if( !checkParameters( queryString ) ){
-    return new Promise( (resolve) => {
-      resolve({
-        statusCode: 400, 
-        body: `Query string parameters are
-          are not correct: ${JSON.stringify(queryString)}`
-      }); 
-    })
-  }
-
-  if( queryString['op'] === 'start' ){
-    console.log( "STARTING SERVER" );
-    return new Promise( (resolve, reject) => {
-      resolve({
-        "$metadata": {
-          "httpStatusCode": 200,
-          "requestId": "66ada73b-19ed-4dc0-b89e-75b0330942c7",
-          "attempts": 1,
-          "totalRetryDelay": 0
-        },
-        "StartingInstances": [
-          {
-            "CurrentState": {
-              "Code": 0,
-              "Name": "pending"
-            },
-            "InstanceId": "i-018f143692e1c3c4d",
-            "PreviousState": {
-              "Code": 80,
-              "Name": "stopped"
-            }
-          }
-        ]
-      })
-    });
-  }
-
-  if( queryString['op'] === 'stop' ){
-    console.log( "STOPPING SERVER" );
-    return new Promise( (resolve, reject) => {
-      resolve({
-        "$metadata": {
-          "httpStatusCode": 200,
-          "requestId": "6952db36-b0d1-45e8-aa8e-40c70a0ce089",
-          "attempts": 1,
-          "totalRetryDelay": 0
-        },
-        "StoppingInstances": [
-          {
-            "CurrentState": {
-              "Code": 64,
-              "Name": "stopping"
-            },
-            "InstanceId": "i-018f143692e1c3c4d",
-            "PreviousState": {
-              "Code": 16,
-              "Name": "running"
-            }
-          }
-        ]
-      });
-    });
-  }
-
-  if( queryString['op'] === 'status' ){
-    if( Math.random() >= 0.5 ){
-      console.log( "STATUS OF SERVER: RETURNING RUNNING" );
-      return new Promise( (resolve, reject) => {
-        resolve({
-          "$metadata": {
-            "httpStatusCode": 200,
-            "requestId": "261ec560-ac95-4952-8739-afb885e8a7e6",
-            "attempts": 1,
-            "totalRetryDelay": 0
-          },
-          "InstanceStatuses": [
-            {
-              "AvailabilityZone": "eu-south-2b",
-              "InstanceId": "i-018f143692e1c3c4d",
-              "InstanceState": {
-                "Code": 16,
-                "Name": "running"
-              },
-              "InstanceStatus": {
-                "Details": [
-                  {
-                    "Name": "reachability",
-                    "Status": "initializing"
-                  }
-                ],
-                "Status": "initializing"
-              },
-              "SystemStatus": {
-                "Details": [
-                  {
-                    "Name": "reachability",
-                    "Status": "initializing"
-                  }
-                ],
-                "Status": "initializing"
-              }
-            }
-          ]
-        });
-      });
-    }else{
-      return new Promise( (resolve, reject) => {
-        console.log( "STATUS OF SERVER: RETURNING STOPPED" );
-        resolve({
-          "$metadata": {
-            "httpStatusCode": 200,
-            "requestId": "0d353743-522a-4176-b157-f82d1741859a",
-            "attempts": 1,
-            "totalRetryDelay": 0
-          },
-          "InstanceStatuses": [
-            {
-              "AvailabilityZone": "eu-south-2b",
-              "InstanceId": "i-018f143692e1c3c4d",
-              "InstanceState": {
-                "Code": 80,
-                "Name": "stopped"
-              },
-              "InstanceStatus": {
-                "Status": "not-applicable"
-              },
-              "SystemStatus": {
-                "Status": "not-applicable"
-              }
-            }
-          ]
-        });
-      });
-    }
-  }
-
-}
+let serverList = [{
+  id : "0", 
+  instanceId : process.env.INSTANCE0,
+  name: "Craft2Exile (Cesar, Jorge, Santi...)"
+},
+{
+  id : "1",
+  instanceId : process.env.INSTANCE1,
+  name: "CreateMod (Quique, Martín, Santi)"
+}];
 
 export const handler = (event) => {
 
@@ -187,6 +58,12 @@ export const handler = (event) => {
   const client = new EC2Client(config);
 
   let command = null;
+  if( queryString['op'] === 'list' ){
+    return new Promise( (resolve,reject) => {
+      resolve( serverList );
+    });
+  }
+
   if( queryString['op'] === 'start' ){
     console.log( `starting instance ${pickupServer( queryString['server'] )}` );
     command = new StartInstancesCommand({ 
@@ -229,7 +106,7 @@ export const handler = (event) => {
         body: JSON.stringify( errorResponse )
       });
     });  
-  })
+  });
 
 
 };

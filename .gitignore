@@ -8,6 +8,8 @@ private/
 # specific for this project
 projects/lambda/ec2controller.zip
 projects/mobile/environments/environment.ts
+projects/mobile/environments/environment.prod.ts
+
 
 # Python 
 .env
