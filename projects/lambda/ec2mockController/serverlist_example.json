@@ -1,0 +1,8 @@
+[{
+  "id" : "0", 
+  "instanceId" : "YOUR-AWS-INSTANCE-ID-HERE",
+  "name": "A meaningful name for your server", 
+  "url": "the url users have to put in the server", 
+  "url_download": "OPTIONAL: a url for download the modpack",
+  "description": "OPTIONAL: a more detailed description of your server"
+}]

@@ -61,7 +61,29 @@
 
     </div>
   </div>
-    
 
+  <div class="row">
+    <div class="col" *ngIf="serverList[currentServer].url">
+      <div class="alert alert-secondary d-flex" role="alert">
+        <span style="font-weight: 600;">
+          Datos de acceso: {{serverList[currentServer].url}}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col" *ngIf="serverList[currentServer].description">
+      <div class="alert alert-secondary d-flex" role="alert">
+        {{serverList[currentServer].description}}
+      </div>
+    </div>
+  </div>  
+
+  <div class="row position-fixed bottom-0 text-white">
+    <div class="col">
+      Version: {{version}}
+    </div>
+  </div>
 
 </div>

@@ -1,0 +1,10 @@
+{
+  "ec2controller" : [
+    { "destFile": "serverlist.json", 
+      "sourceFile": "../../private/serverlist.json"
+    }],
+  "ec2mockController" : [
+    { "destFile": "serverlist.json", 
+      "sourceFile": "../../private/serverlist.json"
+    }]
+}

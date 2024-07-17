@@ -1,7 +1,7 @@
 /*
  * index.mjs - lambda to turn on or off a lambda
  */
-
+import fs from 'node:fs';
 import { fromEnv } from "@aws-sdk/credential-providers";
 import { EC2Client, 
           StartInstancesCommand, 
@@ -16,27 +16,20 @@ function checkParameters( queryString ){
 }
 
 function pickupServer( serverNumber ){
-  if( serverNumber === "0" )
-    return process.env.INSTANCE0;
-  if( serverNumber === "1" )
-    return process.env.INSTANCE1;
-  if( serverNumber === "2" )
-    return process.env.INSTANCE2;
+  serverNumber = parseInt( serverNumber );
+  return serverList[serverNumber].instanceId;
 }
 
 
-let serverList = [{
-  id : "0", 
-  instanceId : process.env.INSTANCE0,
-  name: "Craft2Exile (Cesar, Jorge, Santi...)"
-},
-{
-  id : "1",
-  instanceId : process.env.INSTANCE1,
-  name: "CreateMod (Quique, Martín, Santi)"
-}];
+let serverList = null;
 
 export const handler = (event) => {
+
+  if( !serverList ){
+    console.log("reading server list....");
+    const data = fs.readFileSync('serverlist.json', 'utf8');
+    serverList = JSON.parse( data );
+  }
 
   let queryString = event["queryStringParameters"];
 

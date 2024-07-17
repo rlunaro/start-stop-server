@@ -6,6 +6,14 @@ import { environment  }  from '../environments/environment';
 import { Subscription, interval } from 'rxjs';
 import { FormsModule, NgForm } from '@angular/forms';
 
+interface Server {
+  id: string, 
+  instanceId?: string, 
+  name: string, 
+  url?: string, 
+  description?: string
+};
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -15,30 +23,26 @@ import { FormsModule, NgForm } from '@angular/forms';
 })
 export class HomeComponent implements OnInit, OnDestroy {
 
-  public serverList = [{
-    id : "0", 
-    name: "Craft2Exile (Cesar, Jorge, Santi...)"
-  },
-  {
-    id : "1",
-    name: "CreateMod (Quique, Martín, Santi)"
-  }];
+  public version : string;
+  public serverList: Server[] = [];
   public currentServer = 0;
 
-
-  private serverStatusSubs : Subscription;
+  private serverStatusSubs : Subscription | undefined;
   public statusMessage : string;
   public isStarting : boolean = false;
   public isStopping : boolean = false;
   
   
   constructor( private http : HttpClient ){
+    this.version = environment.version;
     this.statusMessage = "N/A";
-    this.updateServerStatus();
-    this.serverStatusSubs = interval(5000).subscribe(() => {
+    this.loadServerList()
+    .then( (serverList) => {
       this.updateServerStatus();
+      this.serverStatusSubs = interval(5000).subscribe(() => {
+        this.updateServerStatus();
+      });
     });
-
   }
 
   ngOnInit(){
@@ -50,6 +54,21 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.setCurrentServer( );
     if( this.serverStatusSubs )
       this.serverStatusSubs.unsubscribe();
+  }
+
+  private loadServerList(){
+    return new Promise( (resolve,reject) =>{ 
+      this.http.get( environment.endpoint, 
+        { params: 
+           {"op": "list" }
+        })
+        .subscribe( (response:any) => {
+          console.log("load server response: ", response ); 
+          this.serverList = response;
+          resolve( this.serverList );
+        });
+    });
+    
   }
 
   getCurrentServer( ) : number {

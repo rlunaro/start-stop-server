@@ -2,21 +2,16 @@
  * index.mjs - lambda to turn on or off a lambda
  */
 
+import fs from 'node:fs';
+
 function checkParameters( queryString ){
+  if( queryString['op'] && queryString['op'] === 'list' )
+    return true;
   return queryString['op'] && queryString['server'];
 }
 
-let internalState = [
-  { id : '5a2OSbY4c4Hs1VRdQboC',
-    previousStatus : '', 
-    currentStatus : 'stopped'
-  },
-  {
-    id : 'rQUharPQln5DrAAP7FE0', 
-    previousStatus : '',
-    currentStatus : 'stopped'
-  }
-]
+let internalState = null;
+let serverList = null;
 
 function changeServerStatus( serverNumber, newStatus ){
   internalState[serverNumber].previousStatus = internalState[serverNumber].currentStatus;
@@ -35,18 +30,23 @@ function currentStatus( serverNumber ){
   return internalState[serverNumber].currentStatus;
 }
 
-let serverList = [{
-  id : "0", 
-  name: "Craft2Exile (Cesar, Jorge, Santi...)"
-},
-{
-  id : "1",
-  name: "CreateMod (Quique, Martín, Santi)"
-}];
 
 export const handler = (event, context) => {
+  
+  if( !serverList ){
+    console.log("reading server list....");
+    const data = fs.readFileSync('serverlist.json', 'utf8');
+    serverList = JSON.parse( data );
+    internalState = [];
+    for( let server of serverList ){
+      internalState.push({
+        id : server.instanceId, 
+        previousStatus : '', 
+        currentStatus: 'stopped'
+      });
+    }
+  }
 
-  console.log( "this is the mock handler" );
   console.log( JSON.stringify( event, null, 2));
   let queryString = event["queryStringParameters"];
 
